@@ -1,10 +1,12 @@
-package orm
+package orm.example
 
 import orm.Column
 import orm.Entity
 import orm.Generated
 import orm.GenerationStrategy
 import orm.Id
+import orm.Repository
+import orm.RepositoryContext
 import orm.Table
 
 @Entity(name: "Account")
@@ -20,6 +22,12 @@ class Account {
   Account(Long? id, String username) {
     this.id = id
     this.username = username
+  }
+}
+
+class AccountRepository extends Repository<Account, Long> {
+  AccountRepository(RepositoryContext context) {
+    super(context)
   }
 }
 

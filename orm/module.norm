@@ -1,7 +1,7 @@
 Module module() {
   return module(
     name: "orm",
-    version: 1,
+    version: 2,
     exports: [
       "Entity",
       "Table",
@@ -28,6 +28,7 @@ Module module() {
       "Context",
       "Store",
       "QueryExecution",
+      "RepositoryContext",
       "Repository"
     ],
     binding: jarBinding(

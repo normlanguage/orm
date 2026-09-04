@@ -3,41 +3,45 @@ package orm
 import std.collections.MutableList
 
 public class Repository<E, I> {
-  private Store store
+  private RepositoryContext context
   private Class<E> entityType
 
-  Repository(Store store, Class<E> entityType) {
-    this.store = store
-    this.entityType = entityType
+  Repository(RepositoryContext context) {
+    this.context = context
+    this.entityType = E.class
   }
 
   public E save(E entity) {
-    store.persist(entity)
+    this.activeStore().persist(entity)
     return entity
   }
 
   public E update(E entity) {
-    return store.merge<E>(entity) ?? entity
+    return this.activeStore().merge<E>(entity) ?? entity
   }
 
   public E? find(I id) {
-    return store.find<E>(arg0: entityType, arg1: id)
+    return this.activeStore().find<E>(arg0: entityType, arg1: id)
   }
 
   public Void delete(E entity) {
-    store.remove(entity)
+    this.activeStore().remove(entity)
   }
 
   public Boolean attached(E entity) {
-    return store.contains(entity)
+    return this.activeStore().contains(entity)
   }
 
   public Void flush() {
-    store.flush()
+    this.activeStore().flush()
+  }
+
+  public Void clear() {
+    this.activeStore().clear()
   }
 
   public MutableList<E?>? findAll() {
-    QueryExecution<E?>? query = store.createQuery<E>(
+    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
@@ -45,7 +49,7 @@ public class Repository<E, I> {
   }
 
   public MutableList<E?>? findWhere<V>(Field<E, V> field, V value) {
-    QueryExecution<E?>? query = store.createQuery<E>(
+    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -58,7 +62,7 @@ public class Repository<E, I> {
   }
 
   public E? findFirstWhere<V>(Field<E, V> field, V value) {
-    QueryExecution<E?>? query = store.createQuery<E>(
+    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -81,7 +85,7 @@ public class Repository<E, I> {
     if ascending {
       direction = " asc"
     }
-    QueryExecution<E?>? query = store.createQuery<E>(
+    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -96,7 +100,7 @@ public class Repository<E, I> {
   }
 
   public MutableList<E?>? page(Integer offset, Integer limit) {
-    QueryExecution<E?>? query = store.createQuery<E>(
+    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
@@ -106,11 +110,15 @@ public class Repository<E, I> {
   }
 
   public Long count() {
-    QueryExecution<Long?>? query = store.createQuery<Long>(
+    QueryExecution<Long?>? query = this.activeStore().createQuery<Long>(
       arg0: "select count(entity) from " + this.entityName() + " entity",
       arg1: Long.class
     )
     return query?.getSingleResultOrNull() ?? 0
+  }
+
+  private Store activeStore() {
+    return context.store()
   }
 
   private String entityName() {
