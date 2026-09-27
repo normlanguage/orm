@@ -3,7 +3,7 @@ Module module() {
     name: "orm.example",
     version: 1,
     dependencies: [
-      dependency(repository: "github", name: "micronaut.web", version: 7),
+      dependency(repository: "github", name: "micronaut.web", version: 8),
       dependency(repository: "github", name: "orm.micronaut.tx", version: 4),
       dependency(repository: "github", name: "h2.database", version: 2)
     ]
