@@ -1,0 +1,112 @@
+package orm.example
+
+import jakarta.inject.Inject
+import micronaut.http.HttpResponse
+import micronaut.http.annotation.Body
+import micronaut.http.annotation.Controller
+import micronaut.http.annotation.Get
+import micronaut.http.annotation.Post
+import micronaut.http.httpResponseNotFound
+import micronaut.http.httpResponseOk
+import micronaut.inject.context.annotation.Prototype
+import micronaut.web.DataSources
+import micronaut.web.Micronaut
+import micronaut.web.MicronautApplication
+import micronaut.web.MicronautConfig
+import micronaut.web.SchemaMode
+import micronaut.web.Server
+import micronaut.web.h2DataSource
+import micronaut.web.hibernateJpa
+import orm.Column
+import orm.Entity
+import orm.Generated
+import orm.GenerationStrategy
+import orm.Id
+import orm.Repository
+import orm.RepositoryContext
+import orm.Table
+import orm.micronaut.tx.Transactional
+import std.application.Application
+import std.application.applicationPackage
+
+@Entity(name: "Account")
+@Table(name: "accounts")
+public class Account {
+  @Id()
+  @Generated(strategy: GenerationStrategy.IDENTITY)
+  Long? id
+
+  @Column(nullable: false)
+  String username
+
+  Account(Long? id, String username) {
+    this.id = id
+    this.username = username
+  }
+}
+
+@Prototype()
+public class Accounts extends Repository<Account, Long> {
+  @Inject()
+  Accounts(RepositoryContext context) { super(context) }
+}
+
+@Prototype()
+public class AccountService {
+  Accounts accounts
+
+  @Inject()
+  AccountService(Accounts accounts) { this.accounts = accounts }
+
+  @Transactional()
+  Long create(String username) {
+    Account account = accounts.save(Account(id: null, username: username))
+    return account.id!!
+  }
+
+  @Transactional()
+  String? find(Long id) { return accounts.find(id)?.username }
+
+  @Transactional()
+  String? rename(Long id, String username) {
+    Account? account = accounts.find(id)
+    if account == null { return null }
+    account.username = username
+    return accounts.update(account).username
+  }
+}
+
+@Controller("/sample/accounts")
+public class AccountRoutes {
+  AccountService service
+
+  @Inject()
+  AccountRoutes(AccountService service) { this.service = service }
+
+  @Post(value: "/create", consumes: ["application/x-www-form-urlencoded"], produces: ["text/plain"])
+  String create(@Body(value: "username") String username) {
+    return service.create(username).toString()
+  }
+
+  @Get(value: "/{id}", produces: ["text/plain"])
+  HttpResponse<String?> find(Long id) {
+    String? username = service.find(id)
+    if username == null { return httpResponseNotFound<String>()!! }
+    return httpResponseOk<String>(arg0: username)!!
+  }
+
+  @Post(value: "/{id}/rename", consumes: ["application/x-www-form-urlencoded"], produces: ["text/plain"])
+  HttpResponse<String?> rename(Long id, @Body(value: "username") String username) {
+    String? updated = service.rename(id, username)
+    if updated == null { return httpResponseNotFound<String>()!! }
+    return httpResponseOk<String>(arg0: updated)!!
+  }
+}
+
+public Application application() {
+  return MicronautApplication(config: MicronautConfig(
+    micronaut: Micronaut(server: Server(host: "127.0.0.1", port: 18775)),
+    datasources: DataSources(defaultSource: h2DataSource()),
+    jpa: hibernateJpa(entityPackages: [applicationPackage()], schema: SchemaMode.CreateDrop)
+  ))
+}
