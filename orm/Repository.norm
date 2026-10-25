@@ -1,6 +1,6 @@
 package orm
 
-import std.collections.MutableList
+import std.collections.List
 
 public class Repository<E, I> {
   private RepositoryContext context
@@ -40,16 +40,16 @@ public class Repository<E, I> {
     this.activeStore().clear()
   }
 
-  public MutableList<E?>? findAll() {
-    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
+  public List<E?>? findAll() {
+    TypedQuery<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
     return query?.getResultList()
   }
 
-  public MutableList<E?>? findWhere<V>(Field<E, V> field, V value) {
-    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
+  public List<E?>? findWhere<V>(Field<E, V> field, V value) {
+    TypedQuery<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -62,7 +62,7 @@ public class Repository<E, I> {
   }
 
   public E? findFirstWhere<V>(Field<E, V> field, V value) {
-    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
+    TypedQuery<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -75,7 +75,7 @@ public class Repository<E, I> {
     return query?.getSingleResultOrNull()
   }
 
-  public MutableList<E?>? findWhereOrdered<V, O>(
+  public List<E?>? findWhereOrdered<V, O>(
     Field<E, V> field,
     V value,
     Field<E, O> order,
@@ -85,7 +85,7 @@ public class Repository<E, I> {
     if ascending {
       direction = " asc"
     }
-    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
+    TypedQuery<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
         + " entity where entity."
@@ -99,8 +99,8 @@ public class Repository<E, I> {
     return query?.getResultList()
   }
 
-  public MutableList<E?>? page(Integer offset, Integer limit) {
-    QueryExecution<E?>? query = this.activeStore().createQuery<E>(
+  public List<E?>? page(Integer offset, Integer limit) {
+    TypedQuery<E?>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
@@ -110,14 +110,14 @@ public class Repository<E, I> {
   }
 
   public Long count() {
-    QueryExecution<Long?>? query = this.activeStore().createQuery<Long>(
+    TypedQuery<Long?>? query = this.activeStore().createQuery<Long>(
       arg0: "select count(entity) from " + this.entityName() + " entity",
       arg1: Long.class
     )
     return query?.getSingleResultOrNull() ?? 0
   }
 
-  private Store activeStore() {
+  private EntityManager activeStore() {
     return context.store()
   }
 

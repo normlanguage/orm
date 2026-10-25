@@ -26,6 +26,8 @@ Module module() {
       "OrderBy",
       "MapsId",
       "PersistenceContext",
+      "EntityManager",
+      "TypedQuery",
       "RepositoryContext",
       "Repository"
     ],
