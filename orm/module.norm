@@ -6,7 +6,7 @@ Module module() {
       "Entity",
       "Table",
       "Id",
-      "Generated",
+      "GeneratedValue",
       "GenerationStrategy",
       "Column",
       "Version",

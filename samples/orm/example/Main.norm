@@ -19,7 +19,7 @@ import micronaut.web.h2DataSource
 import micronaut.web.hibernateJpa
 import orm.Column
 import orm.Entity
-import orm.Generated
+import orm.GeneratedValue
 import orm.GenerationStrategy
 import orm.Id
 import orm.Repository
@@ -33,7 +33,7 @@ import std.application.applicationPackage
 @Table(name: "accounts")
 public class Account {
   @Id()
-  @Generated(strategy: GenerationStrategy.IDENTITY)
+  @GeneratedValue(strategy: GenerationStrategy.IDENTITY)
   Long? id
 
   @Column(nullable: false)
