@@ -46,7 +46,7 @@ public class Repository<E, I> {
       arg1: entityType
     )
     if query == null { return null }
-    return toList(values: query.getResultList())
+    return toList(values: query.getResultList()!!)
   }
 
   public List<E?>? findWhere<V>(Field<E, V> field, V value) {
@@ -60,7 +60,7 @@ public class Repository<E, I> {
     )
     query?.setParameter(arg0: "value", arg1: value)
     if query == null { return null }
-    return toList(values: query.getResultList())
+    return toList(values: query.getResultList()!!)
   }
 
   public E? findFirstWhere<V>(Field<E, V> field, V value) {
@@ -99,7 +99,7 @@ public class Repository<E, I> {
     )
     query?.setParameter(arg0: "value", arg1: value)
     if query == null { return null }
-    return toList(values: query.getResultList())
+    return toList(values: query.getResultList()!!)
   }
 
   public List<E?>? page(Integer offset, Integer limit) {
@@ -110,7 +110,7 @@ public class Repository<E, I> {
     query?.setFirstResult(offset)
     query?.setMaxResults(limit)
     if query == null { return null }
-    return toList(values: query.getResultList())
+    return toList(values: query.getResultList()!!)
   }
 
   public Long count() {
