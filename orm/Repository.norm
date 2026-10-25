@@ -1,5 +1,7 @@
 package orm
 
+import std.collections.toList
+
 public class Repository<E, I> {
   private RepositoryContext context
   private Class<E> entityType
@@ -38,15 +40,16 @@ public class Repository<E, I> {
     this.activeStore().clear()
   }
 
-  public JavaList<E?>? findAll() {
+  public List<E?>? findAll() {
     TypedQuery<E>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
-    return query?.getResultList()
+    if query == null { return null }
+    return toList(values: query.getResultList())
   }
 
-  public JavaList<E?>? findWhere<V>(Field<E, V> field, V value) {
+  public List<E?>? findWhere<V>(Field<E, V> field, V value) {
     TypedQuery<E>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from "
         + this.entityName()
@@ -56,7 +59,8 @@ public class Repository<E, I> {
       arg1: entityType
     )
     query?.setParameter(arg0: "value", arg1: value)
-    return query?.getResultList()
+    if query == null { return null }
+    return toList(values: query.getResultList())
   }
 
   public E? findFirstWhere<V>(Field<E, V> field, V value) {
@@ -73,7 +77,7 @@ public class Repository<E, I> {
     return query?.getSingleResultOrNull()
   }
 
-  public JavaList<E?>? findWhereOrdered<V, O>(
+  public List<E?>? findWhereOrdered<V, O>(
     Field<E, V> field,
     V value,
     Field<E, O> order,
@@ -94,17 +98,19 @@ public class Repository<E, I> {
       arg1: entityType
     )
     query?.setParameter(arg0: "value", arg1: value)
-    return query?.getResultList()
+    if query == null { return null }
+    return toList(values: query.getResultList())
   }
 
-  public JavaList<E?>? page(Integer offset, Integer limit) {
+  public List<E?>? page(Integer offset, Integer limit) {
     TypedQuery<E>? query = this.activeStore().createQuery<E>(
       arg0: "select entity from " + this.entityName() + " entity",
       arg1: entityType
     )
     query?.setFirstResult(offset)
     query?.setMaxResults(limit)
-    return query?.getResultList()
+    if query == null { return null }
+    return toList(values: query.getResultList())
   }
 
   public Long count() {
