@@ -91,15 +91,15 @@ public class AccountRoutes {
   @Get(value: "/{id}", produces: ["text/plain"])
   HttpResponse<String?> find(Long id) {
     String? username = service.find(id)
-    if username == null { return httpResponseNotFound<String>()!! }
-    return httpResponseOk<String>(arg0: username)!!
+    if username == null { return httpResponseNotFound<String?>()!! }
+    return httpResponseOk<String?>(arg0: username)!!
   }
 
   @Post(value: "/{id}/rename", consumes: ["application/x-www-form-urlencoded"], produces: ["text/plain"])
   HttpResponse<String?> rename(Long id, @Body(value: "username") String username) {
     String? updated = service.rename(id, username)
-    if updated == null { return httpResponseNotFound<String>()!! }
-    return httpResponseOk<String>(arg0: updated)!!
+    if updated == null { return httpResponseNotFound<String?>()!! }
+    return httpResponseOk<String?>(arg0: updated)!!
   }
 }
 

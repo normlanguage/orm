@@ -18,5 +18,13 @@ jobs:
     uses: normlanguage/registry/.github/workflows/package.yml@90b4d247fa4f5f2b620924d2cbc0553e89843700
     with:
       norm-version: 0.27.23
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: normlanguage/registry/.github/actions/setup-norm@90b4d247fa4f5f2b620924d2cbc0553e89843700
+        with:
+          version: 0.27.23
+      - run: norm check samples/orm/example
 
 
