@@ -1,7 +1,7 @@
 Module module() {
   return module(
     name: "orm",
-    version: 6,
+    version: 7,
     exports: [
       "Entity",
       "Table",
