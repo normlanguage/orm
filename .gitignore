@@ -3,3 +3,4 @@ build/
 *.nar
 *.pom
 *.sha256
+/orm/resources/META-INF/licenses/orm/LICENSE
